@@ -25,6 +25,7 @@ while not lora.has_joined():
     uart.write("sending")
     print('Not yet joined...')
 
+time.sleep(1)
 print('Joined')
 uart.write("ok")
 s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
@@ -34,7 +35,10 @@ while 1:
     data = uart.readline() # read up to 5 bytes}
     if data == None:
         ...
+    elif data==b'\x00' or data==b'\xff':
+        uart.write("ok")
     else:
+        print(data)
         uart.write("sending")
         s.setblocking(True)
         s.send(data)
