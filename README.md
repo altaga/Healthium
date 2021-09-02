@@ -24,20 +24,20 @@
   - [Results:](#results)
 - [AWS:](#aws)
   - [Helium - AWS IoT Integration:](#helium---aws-iot-integration)
-  - [IAM Creation:](#iam-creation)
+  - [AWS IAM Creation:](#aws-iam-creation)
   - [AWS DynamoDB:](#aws-dynamodb)
   - [AWS IoT Rule:](#aws-iot-rule)
   - [WebApp:](#webapp)
     - [ReactJS:](#reactjs)
     - [AWS Lambda:](#aws-lambda)
     - [AWS API Gateway:](#aws-api-gateway)
-      - [Postman Test:](#postman-test)
+      - [Test:](#test)
       - [CORS:](#cors)
-    - [AWS S3:](#aws-s3)
-    - [AWS CloudFront:](#aws-cloudfront)
+    - [AWS CodeCommit:](#aws-codecommit)
+    - [AWS Amplify:](#aws-amplify)
 - [Final Product:](#final-product)
   - [Device:](#device)
-  - [WebPage:](#webpage)
+  - [WebApp Final:](#webapp-final)
 - [Field Test:](#field-test)
 - [EPIC DEMO:](#epic-demo)
 
@@ -292,7 +292,7 @@ Ya que los mensajes llegan sin problema a la red e helium, deberemos integrar AW
 
 Veremos que las credenciales que nos pide son credenciales de IAM para poder realizar operaciones en AWS sin problema, para esto y por seguridad deberemos crear una credencial IAM la cual solo tenga acceso a los servicios de AWS IoT.
 
-## IAM Creation:
+## AWS IAM Creation:
 
 Crearemos un user el cual debera tener programmatic access.
 
@@ -366,17 +366,23 @@ Aqui un ejemplo de como los datos se almacenan en DynamoDB.
 
 Ahora ya que tenemos el backend de AWS funcionando y guardando los datos en una DB, tendremos que desplegarlos en algun lado para que esos datos sean de utilidad ya que dato que no es analizando no sirve de nada guardar.
 
+Sientete libre de usar la WebApp y ver el historico del sevice dia con dia.
+
+WebApp: https://master.ds34d9ds0t5rz.amplifyapp.com/
+
 ### ReactJS:
 
-Para programar la pagina web se utilizo el framework de ReactJS, todos los archivos fuente estan en la carpeta WebApp.
+Para programar la pagina web se utilizo el framework de ReactJS, todos los archivos fuente estan en la carpeta [WebApp](https://github.com/altaga/Healthium/tree/main/WebApp).
 
+<img src="./Images/cel.png" width="180px">
+<hr>
+<img src="./Images/dek.png">
 
+Para poder consumir los datos de la DB en nuestro dashboard deberemos crear una API la cual pueda leer los datos y entrgarnoslos.
 
 ### AWS Lambda:
 
-Como dice el [Connection Diagram](#connection-diagram) el primer paso para consumir la DB sera crear una lambda que realice una lectura de los datos, ademas ya que nuestra app debe de poder realizar lecturas por fecha, deberemos programar correctamente un scan de la DB.
-
-En mi caso mi solucion fue utilizar python como Backend de la funcion lambda.
+Ya que la DB va a tener muchisimos datos, no tiene sentido llamar todos los datos guardados en ella cada vez que llamamos a la API, por lo tanto sera nacesario realizar un Query de los datos, y como se menciono al crear la DB sera muy util la Sort Key.
 
     import json
     import boto3
@@ -385,86 +391,93 @@ En mi caso mi solucion fue utilizar python como Backend de la funcion lambda.
     dynamodb = boto3.resource('dynamodb')
 
     def lambda_handler(event, context):
-        
-        table = dynamodb.Table("BlueSpace")
+        table = dynamodb.Table("HealthAWS")
         try:
-            response = table.scan(FilterExpression = Key('Time').gte(event["headers"]["first"]) & Key('Time').lte(event["headers"]["last"]))
+            response = table.query(
+                KeyConditionExpression= Key('Device').eq(event["headers"]["device"]) & Key('Report').between(int(event["headers"]["min"]),int(event["headers"]["max"]))
+            )
             return(response['Items'])
         except:
             return("Error")
 
-Notaremos que el codigo contiene la refrencia de event["headers]["ANY_LABEL"], esto hara que API Gateway pueda mandar las variables en los headers.
+Al colocar la referencia de event["headers"] podremos acceder a los datos que mandemos mediante los headers de la API Request.
 
 ### AWS API Gateway:
 
-Para poder consumir desde nuestra pagina web la funcion lambda, deberemos crear una API que podamos llamar desde la app.
+Ya que podemos llamar a la DB y realizarle un Query debemos de crear una API la cual conecte nuestra WebApp con esta funcion.
 
 <img src="./Images/api1.png">
 
-Ponemos el nombre que querramos a nuestra API y le damos next hasta que se cree.
+La configuracion inicial de la API integraremos directamente la Lambda desde ahora.
 
 <img src="./Images/api2.png">
 
-Una vez teniendo nuestra API, tendremos que crear una route, la cual va a ser el "path" al cual haras la llamada.
+Ahora podemos configurar el resource path, el cual sera el path que pondremos para hacer el request.
 
 <img src="./Images/api3.png">
 
-La integracion de Lambda en la API sera la siguiente.
+Una vez terminada la configuracion la API debera verse asi.
 
 <img src="./Images/api4.png">
 
 NOTA: Al momento de agregar la integracion de Lambda a nuestra API Gateway, se configurara automaticamente los permisos.
 
-#### Postman Test:
+#### Test:
 
-Para probar que esta funcionando nuestra API, usaremos algun software para probar el request como Postman. Si ponemos dos fechas en la API nos regresara nuestro escaneo como muestra la imagen.
+Ya que tenemos nuestra API creada, debemos hacer un request de prueba para revisar que esto funcione.
 
 <img src="./Images/api5.png">
 
 #### CORS:
 
-Ahora si queremos consumir en nuestra pagina web la API deberemos configurar el Cross-Origin Resource Sharing como se muestra en a imagen, la parte importante de esta configuracion es permitir nuestras paginas web como Origin autorizado.
+El Cross-Origin Resource Sharing es un "seguro" el cual nos permite decidir quien puede consumir la api y desde donde, en nuestro caso ya que estamos en un ambiente de produccion deberemos colocar el URL final de nuestra app, para solo permitir que esta consuma la API.
 
 <img src="./Images/api6.png">
 
-NOTA: sin esto no podremos consumir la API desde la pagina web.
+### AWS CodeCommit:
 
-### AWS S3:
+Vamos a usar el servicio de Amplify para hacer el despliegue de nuestra aplicacion, pero este requiere tener un repositorio donde tengamos nuestro codigo para poder relizar el proceso de CI/CD podemos utlizar cualquiera de los siguientes Git repository hosting services.
 
-Para poder desplegar la web app a todo internet, deberemos crear un bucket S3, el cual se encargara de almacenar los achivos de la pagina web y realizar el static web site hosting.
+<img src="./Images/git.png">
 
-<img src="./Images/s3-1.png">
+Sin embargo para mantener una mejor organizacion de las apps desplegadas en AWS, usaremos AWS CodeCommit.
 
-Al ser una aplicacion echa con el framework de ReactJS, unicamente es necesario colocar los archivos dentro de el bucket arrastrandolos.
+<img src="./Images/git2.png">
 
-<img src="./Images/s3-2.png">
+Con este servicio el cual es identico a realizar un push a un repositorio en github, nos permitira mantener el control de versiones de nuestra webapp desde AWS.
 
-En la seccion de propiedades podremos activar el static website hosting, esto nos entregara un URL el cual podremos acceder desde cualquier parte del mundo, sin embargo para el despliegue de una aplicacion a produccion, solo esto NO es suficiente.
+<img src="./Images/git3.png">
 
-### AWS CloudFront:
+### AWS Amplify:
 
-Con este servicio podremos asegurar que nuestra pagina obtenga un certificado SSL y darnos los beneficios del [CDN](https://aws.amazon.com/cloudfront/?nc1=h_ls).
+En este caso como ya se menciono en el paso anterior seleccionaremos AWS CodeCommit.
 
-<img src="./Images/cdn.png">
+<img src="./Images/amp1.png">
 
-Ya que este servicio funciona sin problema, podremos ver nuestra pagina web corriendo, con acceso a la api que creamos y con su certificado SSL.
+Seleccionamos el repositorio que creamos con nuestro codigo.
 
-<img src="./Images/cdn1.png">
+<img src="./Images/amp2.png">
 
-Sientete libre de entrar a la pagina y explorar mi historico de exposicion a personas en mi dia a dia.
+Ya que es un despliegue con ReactJS los ajustes de Build se configuran automaticamente.
 
-WebPage: https://d628z7yj7y4ti.cloudfront.net/
+<img src="./Images/amp3.png">
+
+Una vez terminamos de crear la WebApp, nos debera aparecer todos los pasos del ciclo Ci/CD y si todo salio bien deberan verse asi.
+
+<img src="./Images/amp4.png">
+
+El resultado sera un link parecido a este.
+
+WebPage: WebApp: https://master.ds34d9ds0t5rz.amplifyapp.com/
 
 # Final Product:
 
 ## Device:
-<img src="./Images/product1.jpg">
-<img src="./Images/product2.jpg">
 
-## WebPage:
 
-<img src="./Images/cdn1.png" width="600px">
-<img src="./Images/cdn2.png" width="200px">
+## WebApp Final:
+
+
 
 # Field Test:
 
