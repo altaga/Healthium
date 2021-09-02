@@ -1,6 +1,6 @@
 # Healthium
  
-<img src="LogoPendiente">
+<img src="./Images/logo.png">
 
 # Table of Contents:
 
@@ -38,7 +38,6 @@
 - [Final Product:](#final-product)
   - [Device:](#device)
   - [WebApp Final:](#webapp-final)
-- [Field Test:](#field-test)
 - [EPIC DEMO:](#epic-demo)
 
 # Introduction:
@@ -55,7 +54,7 @@ These costs (both monetary and health wise) for an employee who performs a repet
 
 # Solution:
 
-
+PENDING...
 
 # Materials:
 
@@ -475,16 +474,13 @@ WebPage: WebApp: https://master.ds34d9ds0t5rz.amplifyapp.com/
 ## Device:
 
 
+
 ## WebApp Final:
 
-
-
-# Field Test:
-
-Para probar que el dispositivo funcionaba en un ambiente real, realice una prueba de campo con el device en mi visita semanal al supermercado.
-
-[![FIELD](./Images/logo.png)](https://youtu.be/Wrq1BNmZRns)
+<img src="./Images/cel.png" width="180px">
+<hr>
+<img src="./Images/dek.png">
 
 # EPIC DEMO:
 
-[![DEMO](./Images/logo.png)](https://youtu.be/gp_sZPsd5kc)
+[![DEMO](./Images/logo.png)](Pending)
