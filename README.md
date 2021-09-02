@@ -1,10 +1,10 @@
-# He_alth_AWS
+# Healthium
  
 <img src="LogoPendiente">
 
 # Table of Contents:
 
-- [He_alth_AWS](#he_alth_aws)
+- [Healthium](#healthium)
 - [Table of Contents:](#table-of-contents)
 - [Introduction:](#introduction)
 - [Solution:](#solution)
@@ -14,16 +14,21 @@
   - [Cloud Services:](#cloud-services)
 - [Connection Diagram:](#connection-diagram)
   - [Hardware Diagram:](#hardware-diagram)
-  - [AWS Diagram:](#aws-diagram)
+  - [System Diagram:](#system-diagram)
 - [M5 Core2 AWS Setup:](#m5-core2-aws-setup)
-  - [Main Code:](#main-code)
-- [AWS Services:](#aws-services)
-  - [Device Services:](#device-services)
-    - [AWS IoT:](#aws-iot)
-      - [Create a Thing:](#create-a-thing)
-    - [AWS DynamoDB:](#aws-dynamodb)
-    - [AWS IoT Rule:](#aws-iot-rule)
-  - [WebPage Services:](#webpage-services)
+  - [PortA:](#porta)
+  - [PortB:](#portb)
+  - [PortC:](#portc)
+    - [Fipy Setup:](#fipy-setup)
+      - [Pymakr:](#pymakr)
+  - [Results:](#results)
+- [AWS:](#aws)
+  - [Helium - AWS IoT Integration:](#helium---aws-iot-integration)
+  - [IAM Creation:](#iam-creation)
+  - [AWS DynamoDB:](#aws-dynamodb)
+  - [AWS IoT Rule:](#aws-iot-rule)
+  - [WebApp:](#webapp)
+    - [ReactJS:](#reactjs)
     - [AWS Lambda:](#aws-lambda)
     - [AWS API Gateway:](#aws-api-gateway)
       - [Postman Test:](#postman-test)
@@ -74,6 +79,7 @@ These costs (both monetary and health wise) for an employee who performs a repet
 4. Lambda - [Service Link](https://aws.amazon.com/lambda/?nc2=type_a)
 5. CodeCommit - [Service Link](https://aws.amazon.com/codecommit/)
 6. Amplify - [Service Link](https://aws.amazon.com/amplify/)
+7. Helium Account - [Service Link](https://console.helium.com/)
 
 # Connection Diagram:
 
@@ -81,159 +87,290 @@ These costs (both monetary and health wise) for an employee who performs a repet
 
 <img src="./Images/hardware.png">
 
-## AWS Diagram:
+## System Diagram:
 
 <img src="./Images/software.png">
 
 # M5 Core2 AWS Setup:
 
-El M5Core2 por fortuna para mi tiene muchos frameworks para poder programarlos, sin embargo ya que mi mayor conocimiento y code snippets los he realizado en el Arduino IDE, apoveche el soporte de Arduino del dispositivo para desarrollar mas eficientemente la solucion.
+El M5Core2 es una excelente plataforma de desarrollo de prototipos, en mi caso yo aproveche los puertos grove externos del device para poder conectar los sensores necesarios para el funcionamiento del [System](#hardware-diagram).
+
+| Port   | GPIO PIN     | GPIO PIN     |
+| ------ | ------------ | ------------ |
+| Port A | GPIO32(SDA)  | GPIO33(SCL)  |
+| Port B | GPIO26(DAC)  | GPIO36(ADC)  |
+| Port C | GPIO13(RXD2) | GPIO14(TXD2) |
+
+Para mas informacion ir a la documentacion oficial. [Link](https://docs.m5stack.com/en/core/core2_for_aws)
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Arudino_Logo.svg/1200px-Arudino_Logo.svg.png">
 
-Instala el soporte de las placas ESP32 y la libreria M5Core2 para empezar a trabajar con el Arduino IDE.
+Para programar la placa se utilizo ArduinoIDE.
 
-1. Arduino IDE - [Program Link](https://www.arduino.cc/en/software)
-2. Arduino M5Core2 Library - [Library Link](https://github.com/m5stack/M5Core2)
+- Arduino IDE - [Program Link](https://www.arduino.cc/en/software)
+- Arduino M5Core2 Library - [Library Link](https://github.com/m5stack/M5Core2)
 
-Aunque el Arduino IDE viene ya con varios ejemplos para utilizar la placa, dejo varios codigos optimizados y mejorados para que te acostumbres a programar en esta placa.
+NOTA: el voltaje de los puertos es de 5v, tener esto en consideracion para la seleccion de modulos y sensores.
 
-[Test Sketches](https://github.com/altaga/BlueSpace/tree/main/Arduino%20Test%20Sketch)
+## PortA:
 
-Video:
-[![DEMO](./Images/logo.png)](https://youtu.be/wViDAwuF3z8)
+A este pin le conecte un sensor MLX90614 el cual funciona mediante I2C.
 
-Advertencia: El compilado de el codigo en Arduino puede tardar hasta 5 min, no desesperes si la primera compilacion es tardada.
+<img src="./Images/dev4.jpg" width="800">
 
-## Main Code:
+Para el calculo correcto de la temperatura desde la mano se considero la siguiente tabla como refrencia.
 
-El codigo principal de BlueSpace realiza lo siguiente:
+<img src="https://i.stack.imgur.com/HK7op.gif" width="1000" />
 
-<img src="./Images/softDiagram.png">
+To calculate the real temperature of the body, a multivariable linear regression model was performed to obtain an equation that would relate the temperature of the back of the hand and the ambient temperature, to obtain the real internal temperature of the body.
 
-El utilizar un formato JSON tiene dos motivos principales:
+<img src="https://i.ibb.co/Rgm108g/image.png" width="1000">
 
-1. Al realizar el escaneo de dispositivos de BT, es normal obtener dos o mas detecciones del mismo dispositivo, al guardarlo en JSON nos permite usar la Address como una Key, la cual eliminara las refrencias multiples.
+Dentro del codigo esta formula esta programada en la siguiente funcion.
 
-        class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
-            void onResult(BLEAdvertisedDevice advertisedDevice) {
-              doc[getAddress(advertisedDevice.toString().c_str())][0] = advertisedDevice.getRSSI();
-              // Device Address as a JSON Key
-              doc[getAddress(advertisedDevice.toString().c_str())][1] = dist(advertisedDevice.getRSSI());
-              // Saving the distance
-              if (minDist >= dist(advertisedDevice.getRSSI())) {
-                minDist = dist(advertisedDevice.getRSSI());
-              }
-            }
-        };
+    float correlation(float amb, float skin) {
+      if (skin > 27 && skin < 36) {
+        float realTemp = 0.71429 * skin - 0.35714 * amb + 23.14286;
+        return realTemp;
+      }
+      return skin;
+    }
 
-2. En el Backend y en Frontend de la aplicacion el formato json permite una manipulacion y organizacion de datos mas sencilla.
+## PortB:
 
-// Realizar video en la barranca de BT para mostrar mejor el funcionamiento.
+En este puerto se coloco el sensor MQ135 por su capacidad de medir las PPM en el aire, esto a travez de un valor analogico, sin embargo gracias a ser un modulo economico hay mucha documentacion de como utilizar este sensor correctamente.
 
-Para configurar las credenciales del archivo [certs.h](https://github.com/altaga/BlueSpace/blob/main/Arduino%20Code/BlueSpace/certs.h) favor de ir a la seccion [AWS IoT Thing Creation](#create-a-thing)
+<img src="./Images/dev3.jpg" width="800">
 
-# AWS Services:
+[Docs](https://hackaday.io/project/3475-sniffing-trinket/log/12363-mq135-arduino-library)
 
-Todos los servicios de Cloud usados fueron exclusivamente de AWS para el desarrollo de la app, no necesitas experiencia previa para este tutorial, sin embargo recomendamos leer toda la documentacion de los servicios que vamos a utilizar para evitar que te confundas con algun termino.
+La libreria usada para este proyecto es la siguiente, en mi caso utilice esta libreria con Arduino IDE.
 
-[AWS All Link](#cloud-services)
+[Repository](https://github.com/GeorgK/MQ135)
 
-Los servicios utilizados los dividi en dos grandes ramas, los servicios que utiliza el device principalmente y los servicios que utiliza la WebApp para consumir AWS.
+La parte del codigo que realiza este calculo es la siguiente.
 
-## Device Services:
+    ...
+    #include "MQ135.h"
+    ...
+    #define RZERO 76.63
+    ...
+    MQ135 gasSensor = MQ135(36);
+    ...
+    gSensor = gasSensor.getPPM();
 
-### AWS IoT:
+## PortC:
 
-Este servicio es principalmente destinado a poder comunicar a nuestro device de forma segura con AWS, esto se realiza mediante MQTTS, osea un servicio de suscripbion y publicacion de datos a traves de topicos.
+Aqui vamos a conectar el modulo mas importante para el proyecto el cual es el modulo de LoraWAN, realizado en este caso con una Pycom [Fipy](https://pycom.io/product/fipy/) (es posible usar un [Lopy](https://pycom.io/product/lopy4/)).
 
-<img src="https://www.luisllamas.es/wp-content/uploads/2019/02/protocolos-iot-pubsub.png">
+<img src="./Images/dev1.jpg" width="800">
 
-En este caso nuestro device sera el publisher, como se puede ver en el codigo principal.
+Lo primero que debemos considerar es que este modulo a diferencia de los demas no aguanta 5v en sus puertos digitales, por lo tanto como se muestra en el [System](#hardware-diagram) deberemos hacer un divisor de voltaje para bajar el voltaje de 5v a 3.3, aqui una pequeña simulacion del divisor de voltaje para que quede mas claro su utlilidad.
 
-    client.publish(AWS_IOT_TOPIC, string2char(output1));
+NOTA: No usar un divisor de voltaje podria dejar daños permanentes en la Fipy/Lopy
 
-Para poder establecer la conexion correctamente con AWS se utiliza un sistema de 2 certificados y una private Key que identifican al device ante AWS cuando mandamos mensajes a un Endpoint en HTTPS.
+<img src="./Images/divider.png" width="800">
 
-<img src="./Images/mqtts.png">
+Este circuito lo coloque en una breadboard e hice con el un shield, para evitar fallos en el circuito.
 
-#### Create a Thing:
+<img src="./Images/dev2.jpg" width="800">
 
-Los pasos para poder crear una thing son actualmente muy sencillos, primero deberemos entrar al servicio AWS IoT Core desde AWS Management Console.
+### Fipy Setup:
 
-<img src="./Images/iot1.png">
+Ya que cubrimos todas las consideraciones del Hardware, tenemos que configurar el modulo de Fipy para transmitir la informacion mandada desde el M5Core2 a le red LoraWAN de Helium, este se programa con MicroPython, ya que es un lenguaje interpretado y no compilado, flashear el dispositivo es muy rapido.
 
-Ahora crearemos nuestra thing, si es la primera vez que creas una no deberian aparecer things como se muestra en pantalla.
+#### Pymakr:
 
-<img src="./Images/iot2.png">
+La herramienta que utiliza Pycom para programar la board es [Pymakr](https://pycom.io/products/supported-networks/pymakr/). En este caso la herramienta requiere de un IDE como lo es [VScode](https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr) o [Atom (Recommended)](https://atom.io/packages/pymakr). La herramienta ya esta completamente automatizada, en cuanto conectas la board, la misma herramienta te conecta a la board mediante el puerto serial.
 
-Con AWS es posible crear toda una brigada de devices a la vez, sin embargo para este proyecto solo necesitaremos crear una.
+<img src="./Images/atom.png">
 
-<img src="./Images/iot3.png">
+Ahora para que la board funcione y nos permita conetarnos a la red LoraWAN de Helium deberemos obtener las credenciales que muestro a continuacion.
 
-Como podemos ver en el siguiente menu, veremos que podemos configurar muchas caracteristicas de las things con el fin de poder crear categorias, permidos dintitos entre things, etc. Sin embargo solo le pondremos el nombre a nuestra thing y presionaremos next al fondo de la pantalla.
+    app_eui = ubinascii.unhexlify('XXXXXXXXXXX')
+    app_key = ubinascii.unhexlify('XXXXXXXXXXXXXXXXXXXXXX')
+    dev_eui = ubinascii.unhexlify('XXXXXXXXXXX')
 
-<img src="./Images/iot4.png">
+Estas credenciales deberemos obtenerlas desde la consola de [Helium](https://console.helium.com/).
 
-Recomiendo ampliamente que dejen a AWS crear los certificarlos y gestionarlos, asi que dejamos la configuracion que nos ofrece AWS como recommended y presionamos Next.
+<img src="./Images/helium.png">
 
-<img src="./Images/iot5.png">
+Una vez creamos el device, la plataforma nos dara todos los datos de acceso.
 
-Para que nuestro device pueda mandar datos correctamente a AWS deberemos agregar una policy la cual permita esto correctamente.
+<img src="./Images/helium1.png">
 
-<img src="./Images/iot6.png">
+Ahora deberemos colocar las credenciales en el archivo config.py en el codigo de la pycom.
 
-La policy que debemos implementar para este prototipo sin ninguna complicacion va a ser la siguiente.
+<img src="./Images/atom2.png">
 
-<img src="./Images/iot7.png">
+Una vez flasheado el codigo principal tendremos una completa comunicacion serial entre el modulo y el M5Core2.
 
-Al momento de crear la Thing AWS nos dara todos los certificados necesarios, descargalos todos.
+<img src="./Images/online.jpg">
 
-<img src="./Images/iot8.png">
+Cuando hay error de comunicacion o el modulo no es detectado nos mandara un mensaje de error.
 
-Con esto el unico dato que nos faltaria para configurar nuestro device seria el Endpoint de AWS, sin embargo ese se encuentra en la seccion de Settings.
+<img src="./Images/error.jpg">
 
-<img src="./Images/iot9.png">
+## Results:
 
-Asi deberas ver los datos llegar a tu monitor en AWS.
+Si todo lo anterior lo hemos realizado correctamente en la consola de helium deberemos ver lo siguiente.
 
-<img src="./Images/mqtt.gif">
+<img src="./Images/result1.png">
 
-### AWS DynamoDB:
+Podemos ver que el payload que llego es una cadena en base64.
 
-Ya que podemos mandar datos a AWS, no podemos dejar que se desperdicien, los datos debemos analizarlos para poder hacer un exposure tracing posteriormente en nuestra app, asi que como primer paso iremos ahora al servicio de DynamoDB y crearemos una DB con las siguientes caracteristicas.
+    MCwzNi4xMA0K
+
+La decodificacion se tendra que realizar en algun punto, sin embargo el algoritmo para decodificar correctamente esta cadena es el siguiente.
+
+1. Convierte la cadena en base 64 a una cadena hexadecimal
+   * 302C33362E31300D0A
+2. Convierte la cadena hexadecimal en un arreglo de numeros separando los dos digitos del numero hexadecimal
+   * [49, 51, 44, 51, 54, 46, 57, 49, 13, 10]
+3. Obten el caracter correspondiente a cada numero.
+   * ["1", "3", ",", "3", "6", ".", "9", "1", "\r", "\n"]
+4. Convierte el arreglo en una cadena unica.
+   * 13,36.91
+5. Finalmente separa la cadena en un arreglo con dos valores separados para obtener el valor de ppm y la temperatura.
+   * ["0", "36.10"]
+
+Este es el Snippet de codigo para decodificar el mensaje con Javascript, puedes probarlo en cualquier consola de depuracion.
+
+    function base64ToHex(str) {
+      const raw = atob(str);
+      let result = '';
+      for (let i = 0; i < raw.length; i++) {
+        const hex = raw.charCodeAt(i).toString(16);
+        result += (hex.length === 2 ? hex : '0' + hex);
+      }
+      return result.toUpperCase();
+    }
+    function hexStringtoHexArray(str) {
+      let result = [];
+      for (let i = 0; i < str.length; i += 2) {
+        result.push(parseInt(str.substr(i, 2), 16));
+      }
+      return result;
+    }
+    function hexArraytoCharArray(arr) {
+      let result = [];
+      for (let i = 0; i < arr.length; i++) {
+        result.push(String.fromCharCode(arr[i]));
+      }
+      return result;
+    }
+    function charArraytoString(array) {
+      let result = '';
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] !== '\n' && array[i] !== '\r') {
+          result += array[i];
+        }
+      }
+      return result;
+    }
+    function processing(input) {
+      let result = base64ToHex(input);
+      result = hexStringtoHexArray(result);
+      result = hexArraytoCharArray(result);
+      result = charArraytoString(result);
+      result = result.split(',');
+      return result;
+    }
+    processing("MCwzNi4xMA0K")
+
+Console Example:
+
+<img src="./Images/console.gif">
+
+# AWS:
+
+## Helium - AWS IoT Integration:
+
+Ya que los mensajes llegan sin problema a la red e helium, deberemos integrar AWS IoT, para esto deberemos ir a la seccion de Integrations y seleccionar AWS IoT Core.
+
+<img src="./Images/integration.png">
+
+Veremos que las credenciales que nos pide son credenciales de IAM para poder realizar operaciones en AWS sin problema, para esto y por seguridad deberemos crear una credencial IAM la cual solo tenga acceso a los servicios de AWS IoT.
+
+## IAM Creation:
+
+Crearemos un user el cual debera tener programmatic access.
+
+<img src="./Images/iam1.png">
+
+Le agregaremos la policy de poder realizar acciones en AWS IoT.
+
+<img src="./Images/iam2.png">
+
+Por ultimo crearemos el usuario.
+
+<img src="./Images/iam3.png">
+
+Finalmente nos dara las credenciales que ocupamos para la consola de Helium.
+
+<img src="./Images/iam4.png">
+
+La configuracion que yo ocupe en mi consola fue la siguiente.
+
+<img src="./Images/awshelium.png">
+
+Haciendo una prueba del sistema.
+
+<img src="./Images/console1.gif">
+
+## AWS DynamoDB:
+
+Ahora que los datos estan llegando a AWS IoT debemos de poder almacenarlos de alguna forma, por lo tanto deberemos crear una DynamoDB la cual no servira como almacen de los datos para su posterior despliegue en un dashboard.
 
 <img src="./Images/db1.png">
 
-Nada mas tenemos que recordar el nombre de la DB para el siguiente paso.
+Coloca el nombre que desees a la tabla y no olvides colocarle un Sort Key, esto sera importante para poder realizar un query a la tabla de forma programatica mas adelante.
 
 <img src="./Images/db2.png">
 
-### AWS IoT Rule:
+En mi caso utilice como keys Device y Report.
 
-La forma mas sencilla de poder almacenar los datos recibimos en la cloud de forma automatica, ser a travez de una IoT Rule, esta rule es una proceso que se ejecutara cada vez que recibamos un mensaje en nuestro Topic, como una funcion serverless. Para crear la rule deberemos ir la seccion de rules de AWS IoT.
+<img src="./Images/db3.png">
+
+## AWS IoT Rule:
+
+Ya que no tenemos el tiempo para escribir dato por dato en la DynamoDB, cada vez que llega a AWS IoT, deberemos crear un script que reciba los datos de AWS IoT y los mande a DynamoDB de forma programatica, hay muchas forma de hacerlo, sin embargo AWS ya nos creo una herramienta la cual realiza justo esta tarea, da rules.
+
+<img src="./Images/Da_Rules.png">
+
+En la consola de AWS IoT iremos a la seccion señalada para crear nuestra rule
 
 <img src="./Images/rule1.png">
 
-Crearemos nuestra rule solo colocando el name que queramos y poniendo en la seccion de Rule query statement lo siguiente.
+Al crear la rule tendremos que poner atencion al nombre y mas importante al Rule query select, este valor filtrara todos los valores recibidos en AWS IoT y solo nos regresara los que esten en el topic "/HeliumConsole/Devices".
 
 <img src="./Images/rule2.png">
 
-La rule requiere que configuremos una accion que ocurrira cada entrada de datos, para este caso sera la siguiente.
+Cuando creamos una rule, debe tener asiciada una action, esta action la seleccionaremos al hacer click en Add action.
 
 <img src="./Images/rule3.png">
 
-Dentro de esta action la configuracion requerida sera la siguiente.
+Para este ejemplo usaremos la accion mas simple que es Insert a message into a DynamoDB table.
 
 <img src="./Images/rule4.png">
 
-Una vez terminemos esta configuracion, tendremos la accion de subir datos a la DB de forma automatica.
+En mi caso la configuracion que usare para que los datos pasen a la DB sera esta.
 
 <img src="./Images/rule5.png">
 
-## WebPage Services:
+Aqui un ejemplo de como los datos se almacenan en DynamoDB.
 
-Ya que tenemos todos los servicios del device corriendo y mandando datos a nuestra DB, ahora debemos consumirlos en nuestra App para mostrar datos relevantes.
+<img src="./Images/rule6.png">
+
+## WebApp:
+
+Ahora ya que tenemos el backend de AWS funcionando y guardando los datos en una DB, tendremos que desplegarlos en algun lado para que esos datos sean de utilidad ya que dato que no es analizando no sirve de nada guardar.
+
+### ReactJS:
+
+Para programar la pagina web se utilizo el framework de ReactJS, todos los archivos fuente estan en la carpeta WebApp.
+
+
 
 ### AWS Lambda:
 
