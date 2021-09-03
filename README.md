@@ -56,17 +56,17 @@ These costs (both monetary and health wise) for an employee who performs a repet
 
 Mi sistema es capaz de relizar no solo la lectura de la temperatura corporal de una persona a travez de leer su dorso de su mano, sino que realiza la lectura de PPM en el ambiente, con el fin de proveer siempre la calidad de este y asegurar que los clientes y empleados esten en un ambiente bien ventilado.
 
-<img src="./Images/vent.jpg">
+<img src="./Images/vent.jpg" width="700">
 
 Las soluciones actuales:
 
 Los termometros de mano, tienen como finalidad obtener medienate la lectura manual, la temperatura coporal, sin embargo estos deben de ser tomados por un trabajador todo el tiempo y no guardan ningun registro de los mismos.
 
-<img src="./Images/term.jpg">
+<img src="./Images/term.jpg" width="700">
 
 Termometros automaticos, estos dispositivos automatizan la tarea de relizar la lectura de la temperatura a los clientes, sin embargo estos tienen que aproximar su frente para una lectura y como el device anterior, todos los datos terminan perdidos.
 
-<img src="./Images/term2.jpg">
+<img src="./Images/term2.jpg" width="500">
 
 Mi solucion integra todas las ventajas de medicion de temperatura y condicion ambiental del establecimiento y ocupando tanto para el backend como en el frontend servicios de la poderosa nube de AWS, con solo realizar el setup inicial, ya que este device ya es capas de mandar los datos a travez de la red Helium LoraWAN, no es necesario realizar ningun cambio ni inversion extra en el establecimiento, ademas de ser un device Plug and Play.
 
@@ -118,7 +118,7 @@ El M5Core2 es una excelente plataforma de desarrollo de prototipos, en mi caso y
 
 Para mas informacion ir a la documentacion oficial. [Link](https://docs.m5stack.com/en/core/core2_for_aws)
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Arudino_Logo.svg/1200px-Arudino_Logo.svg.png">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Arudino_Logo.svg/1200px-Arudino_Logo.svg.png" width="500">
 
 Para programar la placa se utilizo ArduinoIDE.
 
@@ -131,7 +131,7 @@ NOTA: el voltaje de los puertos es de 5v, tener esto en consideracion para la se
 
 A este pin le conecte un sensor MLX90614 el cual funciona mediante I2C.
 
-<img src="./Images/dev4.jpg" width="800">
+<img src="./Images/dev4.jpg" width="600">
 
 Para el calculo correcto de la temperatura desde la mano se considero la siguiente tabla como refrencia.
 
@@ -155,7 +155,7 @@ Dentro del codigo esta formula esta programada en la siguiente funcion.
 
 En este puerto se coloco el sensor MQ135 por su capacidad de medir las PPM en el aire, esto a travez de un valor analogico, sin embargo gracias a ser un modulo economico hay mucha documentacion de como utilizar este sensor correctamente.
 
-<img src="./Images/dev3.jpg" width="800">
+<img src="./Images/dev3.jpg" width="500">
 
 [Docs](https://hackaday.io/project/3475-sniffing-trinket/log/12363-mq135-arduino-library)
 
@@ -178,7 +178,7 @@ La parte del codigo que realiza este calculo es la siguiente.
 
 Aqui vamos a conectar el modulo mas importante para el proyecto el cual es el modulo de LoraWAN, realizado en este caso con una Pycom [Fipy](https://pycom.io/product/fipy/) (es posible usar un [Lopy](https://pycom.io/product/lopy4/)).
 
-<img src="./Images/dev1.jpg" width="800">
+<img src="./Images/dev1.jpg" width="500">
 
 Lo primero que debemos considerar es que este modulo a diferencia de los demas no aguanta 5v en sus puertos digitales, por lo tanto como se muestra en el [System](#hardware-diagram) deberemos hacer un divisor de voltaje para bajar el voltaje de 5v a 3.3, aqui una pequeña simulacion del divisor de voltaje para que quede mas claro su utlilidad.
 
@@ -188,7 +188,7 @@ NOTA: No usar un divisor de voltaje podria dejar daños permanentes en la Fipy/L
 
 Este circuito lo coloque en una breadboard e hice con el un shield, para evitar fallos en el circuito.
 
-<img src="./Images/dev2.jpg" width="800">
+<img src="./Images/dev2.jpg" width="500">
 
 ### Fipy Setup:
 
@@ -220,11 +220,11 @@ Ahora deberemos colocar las credenciales en el archivo config.py en el codigo de
 
 Una vez flasheado el codigo principal tendremos una completa comunicacion serial entre el modulo y el M5Core2.
 
-<img src="./Images/online.jpg">
+<img src="./Images/online.jpg" width="700">
 
 Cuando hay error de comunicacion o el modulo no es detectado nos mandara un mensaje de error.
 
-<img src="./Images/error.jpg">
+<img src="./Images/error.jpg" width="700">
 
 ## Results:
 
@@ -351,7 +351,7 @@ En mi caso utilice como keys Device y Report.
 
 Ya que no tenemos el tiempo para escribir dato por dato en la DynamoDB, cada vez que llega a AWS IoT, deberemos crear un script que reciba los datos de AWS IoT y los mande a DynamoDB de forma programatica, hay muchas forma de hacerlo, sin embargo AWS ya nos creo una herramienta la cual realiza justo esta tarea, da rules.
 
-<img src="./Images/Da_Rules.png">
+<img src="./Images/Da_Rules.png" width="400">
 
 En la consola de AWS IoT iremos a la seccion señalada para crear nuestra rule
 
