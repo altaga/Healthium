@@ -489,8 +489,7 @@ WebPage: WebApp: https://master.ds34d9ds0t5rz.amplifyapp.com/
 
 ## Device:
 
-<img src="./Images/prod1.jpg" height="330px">
-<img src="./Images/prod2.jpg" height="330px">
+<img src="./Images/prod1.jpg" height="330px"><img src="./Images/prod2.jpg" height="330px">
 
 ## WebApp Final:
 
