@@ -50,11 +50,27 @@ This job generates an annual cost per worker of at least $30, 000 [1] and if tha
 These costs (both monetary and health wise) for an employee who performs a repetitive task is excessive but necessary, because the solutions currently created are not yet sufficient to replace this position.
 
 1. https://www.ziprecruiter.com/Salaries/Retail-Security-Officer-Salary
-2.https://www.dol.gov/sites/dolgov/files/WHD/posters/FFCRA_Poster_WH1422_Non-Federal.pdf
+2. https://www.dol.gov/sites/dolgov/files/WHD/posters/FFCRA_Poster_WH1422_Non-Federal.pdf
 
 # Solution:
 
-PENDING...
+Mi sistema es capaz de relizar no solo la lectura de la temperatura corporal de una persona a travez de leer su dorso de su mano, sino que realiza la lectura de PPM en el ambiente, con el fin de proveer siempre la calidad de este y asegurar que los clientes y empleados esten en un ambiente bien ventilado.
+
+<img src="./Images/vent.jpg">
+
+Las soluciones actuales:
+
+Los termometros de mano, tienen como finalidad obtener medienate la lectura manual, la temperatura coporal, sin embargo estos deben de ser tomados por un trabajador todo el tiempo y no guardan ningun registro de los mismos.
+
+<img src="./Images/term.jpg">
+
+Termometros automaticos, estos dispositivos automatizan la tarea de relizar la lectura de la temperatura a los clientes, sin embargo estos tienen que aproximar su frente para una lectura y como el device anterior, todos los datos terminan perdidos.
+
+<img src="./Images/term2.jpg">
+
+Mi solucion integra todas las ventajas de medicion de temperatura y condicion ambiental del establecimiento y ocupando tanto para el backend como en el frontend servicios de la poderosa nube de AWS, con solo realizar el setup inicial, ya que este device ya es capas de mandar los datos a travez de la red Helium LoraWAN, no es necesario realizar ningun cambio ni inversion extra en el establecimiento, ademas de ser un device Plug and Play.
+
+<img src="./Images/logo.png">
 
 # Materials:
 
@@ -473,7 +489,8 @@ WebPage: WebApp: https://master.ds34d9ds0t5rz.amplifyapp.com/
 
 ## Device:
 
-
+<img src="./Images/prod1.jpg" height="330px">
+<img src="./Images/prod2.jpg" height="330px">
 
 ## WebApp Final:
 
