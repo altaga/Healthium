@@ -54,7 +54,7 @@ These costs (both monetary and health wise) for an employee who performs a repet
 
 # Solution:
 
-Mi sistema es capaz de relizar no solo la lectura de la temperatura corporal de una persona a travez de leer su dorso de su mano, sino que realiza la lectura de PPM en el ambiente, con el fin de proveer siempre la calidad de este y asegurar que los clientes y empleados esten en un ambiente bien ventilado.
+This sistema es capaz de relizar no solo la lectura de la temperatura corporal de una persona a travez de leer su dorso de su mano, sino que realiza la lectura de PPM en el ambiente, con el fin de proveer siempre la calidad de este y asegurar que los clientes y empleados esten en un ambiente bien ventilado.
 
 <img src="./Images/vent.jpg" width="700">
 
