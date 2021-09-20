@@ -108,7 +108,7 @@ My solution integrates all the advantages of temperature measurement and environ
 
 # M5 Core2 AWS Setup:
 
-The M5Core2 is an excellent prototype development platform, I took advantage of the external grove ports of the device to be able to connect the sensors necessary for the operation of the [System] (# hardware-diagram).
+The M5Core2 is an excellent prototype development platform, I took advantage of the external grove ports of the device to be able to connect the sensors necessary for the operation of the [System](#hardware-diagram).
 
 | Port   | GPIO PIN     | GPIO PIN     |
 | ------ | ------------ | ------------ |
