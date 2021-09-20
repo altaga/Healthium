@@ -54,21 +54,21 @@ These costs (both monetary and health wise) for an employee who performs a repet
 
 # Solution:
 
-This sistema es capaz de relizar no solo la lectura de la temperatura corporal de una persona a travez de leer su dorso de su mano, sino que realiza la lectura de PPM en el ambiente, con el fin de proveer siempre la calidad de este y asegurar que los clientes y empleados esten en un ambiente bien ventilado.
+This system is capable of not only reading the body temperature of a person through the back of his hand, but also reading the PPM (Air quality) in the environment. This, in order to ensure that customers and employees are in a well-ventilated environment.
 
 <img src="./Images/vent.jpg" width="700">
 
-Las soluciones actuales:
+Current solutions:
 
-Los termometros de mano, tienen como finalidad obtener medienate la lectura manual, la temperatura coporal, sin embargo estos deben de ser tomados por un trabajador todo el tiempo y no guardan ningun registro de los mismos.
+The hand thermometers are intended to obtain a manual reading of body temperature, however these must be taken by a worker all the time and do not keep any records.
 
 <img src="./Images/term.jpg" width="700">
 
-Termometros automaticos, estos dispositivos automatizan la tarea de relizar la lectura de la temperatura a los clientes, sin embargo estos tienen que aproximar su frente para una lectura y como el device anterior, todos los datos terminan perdidos.
+Automatic thermometers; these devices automate the task of taking temperature readings, however the customer has to approach their forehead to the device for a reading and like the previous device, all data ends up lost.
 
 <img src="./Images/term2.jpg" width="500">
 
-Mi solucion integra todas las ventajas de medicion de temperatura y condicion ambiental del establecimiento y ocupando tanto para el backend como en el frontend servicios de la poderosa nube de AWS, con solo realizar el setup inicial, ya que este device ya es capas de mandar los datos a travez de la red Helium LoraWAN, no es necesario realizar ningun cambio ni inversion extra en el establecimiento, ademas de ser un device Plug and Play.
+My solution integrates all the advantages of temperature measurement and environmental condition of the establishment. It uses both the backend and the frontend services of the AWS cloud. Just by performing the initial setup, since this device is already capable of sending the data through the Helium LoraWAN network, it is not necessary to make any changes or extra investment in the establishment, in addition to being a Plug and Play device.
 
 <img src="./Images/logo.png">
 
