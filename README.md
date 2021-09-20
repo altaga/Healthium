@@ -196,7 +196,7 @@ Since we have now covered all the Hardware considerations, we have to configure 
 
 #### Pymakr:
 
-The tool that Pycom uses to program the board is [Pymakr](https://pycom.io/products/supported-networks/pymakr/). In this case, the tool requires an IDE such as [VScode](https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr) or [Atom](https://atom.io/ packages/pymakr). The tool is already fully automated, as soon as you connect the board, the same tool connects you to the board through the serial port.
+The tool that Pycom uses to program the board is [Pymakr](https://pycom.io/products/supported-networks/pymakr/). In this case, the tool requires an IDE such as [VScode](https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr) or [Atom](https://atom.io/packages/pymakr). The tool is already fully automated, as soon as you connect the board, the same tool connects you to the board through the serial port.
 
 <img src="./Images/atom.png">
 
