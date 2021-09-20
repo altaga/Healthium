@@ -180,7 +180,7 @@ Here we are going to connect the most important module for the project which is 
 
 <img src="./Images/dev1.jpg" width="500">
 
-The first thing we must consider is that this module, unlike the others, does not support 5V in its digital ports, therefore, as shown in the [System] (#hardware-diagram) we will have to make a voltage divider to lower the voltage of 5v to 3.3, here is a small simulation of the voltage divider to make its usefulness clearer.
+The first thing we must consider is that this module, unlike the others, does not support 5V in its digital ports, therefore, as shown in the [System](#hardware-diagram) we will have to make a voltage divider to lower the voltage of 5v to 3.3, here is a small simulation of the voltage divider to make its usefulness clearer.
 
 NOTE: Failure to use a voltage divider could permanently damage the Fipy/Lopy.
 
@@ -196,7 +196,7 @@ Since we have now covered all the Hardware considerations, we have to configure 
 
 #### Pymakr:
 
-The tool that Pycom uses to program the board is [Pymakr](https://pycom.io/products/supported-networks/pymakr/). In this case, the tool requires an IDE such as [VScode](https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr) or [Atom (Recommended)](https://atom.io/ packages/pymakr). The tool is already fully automated, as soon as you connect the board, the same tool connects you to the board through the serial port.
+The tool that Pycom uses to program the board is [Pymakr](https://pycom.io/products/supported-networks/pymakr/). In this case, the tool requires an IDE such as [VScode](https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr) or [Atom(Recommended)](https://atom.io/ packages/pymakr). The tool is already fully automated, as soon as you connect the board, the same tool connects you to the board through the serial port.
 
 <img src="./Images/atom.png">
 
